@@ -18,6 +18,17 @@ window.addEventListener("mousemove", (event: MouseEvent) => {
 	particles[particles.length - 1].position.y = Mouse.getMousePos(event).y;
 });
 
+// window.addEventListener(
+// 	"click",
+// 	(event: MouseEvent) => {
+// 		spawnParticle(
+// 			new Vector(event.clientX, event.clientY),
+// 			new Vector(0, 0)
+// 		);
+// 	},
+// 	false
+// );
+
 class Particle {
 	constructor(
 		public mass = 1, // mass of this particle?
@@ -141,19 +152,26 @@ const drawVectorField = (ctx: CanvasRenderingContext2D) => {
 	}
 };
 
-for (let i = 0; i < 50; i++) {
+const spawnParticle = (position: Vector, velocity: Vector) => {
 	particles.push(
 		new Particle(
 			0,
-			new Vector(
-				Math.random() * window.innerWidth,
-				Math.random() * window.innerHeight
-			),
-			new Vector(Math.random() * 10 - 5, Math.random() * 10 - 5),
+			position,
+			velocity,
 			colourutil.getRandomLight(),
 			false,
 			false
 		)
+	);
+};
+
+for (let i = 0; i < 50; i++) {
+	spawnParticle(
+		new Vector(
+			Math.random() * window.innerWidth,
+			Math.random() * window.innerHeight
+		),
+		new Vector(Math.random() * 10 - 5, Math.random() * 10 - 5)
 	);
 }
 
