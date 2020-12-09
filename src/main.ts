@@ -1,24 +1,18 @@
-import { SolarSystem } from './examples/solar-system';
-import { Clock } from './examples/clock';
-import { BouncingBall } from './examples/bouncing-ball';
-import { Constellation, Config } from './examples/constellation';
-import { CandyText } from './examples/candy-text';
+import { render } from "./canvas/gravity";
+import { BouncingBall } from "./canvas/line";
+
+export const canvas = <HTMLCanvasElement>document.getElementById("lines");
 
 function main() {
-  const canvas = <HTMLCanvasElement>document.getElementById('solar-system');
-  new SolarSystem(canvas);
-  const canvas2 = <HTMLCanvasElement>document.getElementById('clock');
-  new Clock(canvas2);
-  const canvas3 = <HTMLCanvasElement>document.getElementById('bouncing-ball');
-  new BouncingBall(canvas3);
+	canvas.width = window.innerWidth;
+	canvas.height = window.innerHeight;
 
-  const canvas4 = <HTMLCanvasElement>document.getElementById('constellation');
-  const constellation = new Constellation(canvas4);
-  constellation.drawStars(100);
+	window.addEventListener("resize", () => {
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+	});
 
-  const canvas5 = <HTMLCanvasElement>document.getElementById('candy-text');
-  const candy = new CandyText(canvas5);
-  candy.draw();
+	render(canvas.getContext("2d"));
 }
 
 main();
