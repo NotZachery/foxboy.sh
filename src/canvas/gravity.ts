@@ -140,7 +140,7 @@ const spawnParticle = (position: Vector, velocity: Vector) => {
 	);
 };
 
-for (let i = 0; i < 250; i++) {
+for (let i = 0; i < 200; i++) {
 	spawnParticle(
 		new Vector(
 			Math.random() * window.innerWidth,
@@ -157,6 +157,21 @@ particles.push(
 		new Vector(
 			window.innerWidth - window.innerWidth / 4,
 			window.innerHeight / 2 - window.innerHeight / 8
+		),
+		new Vector(Math.random() * 0.05 - 5, Math.random() * 0.05 - 5),
+		"fff",
+		false,
+		true
+	)
+);
+
+// big repeller
+particles.push(
+	new Particle(
+		-1,
+		new Vector(
+			window.innerWidth - window.innerWidth / 1.4,
+			window.innerHeight / 2 - window.innerHeight / 12
 		),
 		new Vector(Math.random() * 0.05 - 5, Math.random() * 0.05 - 5),
 		"fff",
