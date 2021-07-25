@@ -18,20 +18,9 @@ window.addEventListener("mousemove", (event: MouseEvent) => {
 	particles[particles.length - 1].position.y = Mouse.getMousePos(event).y;
 });
 
-// window.addEventListener(
-// 	"click",
-// 	(event: MouseEvent) => {
-// 		spawnParticle(
-// 			new Vector(event.clientX, event.clientY),
-// 			new Vector(0, 0)
-// 		);
-// 	},
-// 	false
-// );
-
 class Particle {
 	constructor(
-		public mass = 1, // mass of this particle?
+		public mass = 1,
 		public position = new Vector(0, 0),
 		public velocity = new Vector(0, 0),
 
@@ -65,9 +54,9 @@ class Particle {
 
 			const acceleration = between.unit
 				.scale(particle.mass)
-				.scale(-10000 / Math.max(between.magnitude ** 2, 10));
+				.scale(-10000 / Math.max(between.magnitude ** 2, 100));
 
-			this.velocity = this.velocity.add(acceleration.scale(0.1));
+			this.velocity = this.velocity.add(acceleration.scale(0.2));
 		}
 
 		this.position = this.position.add(
@@ -76,45 +65,50 @@ class Particle {
 
 		// check for y out of bounds
 		if (
-			this.position.y > window.innerHeight &&
+			this.position.y > window.innerHeight + window.innerHeight / 2 &&
 			this.velocity.gradient() > 0
 		) {
-			this.lastPos.y = -10;
-			this.position.y = -10;
-		} else if (this.position.y < 0 && this.velocity.gradient() < 0) {
-			this.lastPos.y = window.innerHeight + 10;
-			this.position.y = window.innerHeight + 10;
+			this.lastPos.y = 0;
+			this.position.y = 0;
+			this.drag(this.velocity);
+		} else if (
+			this.position.y < -window.innerHeight / 2 &&
+			this.velocity.gradient() < 0
+		) {
+			this.lastPos.y = window.innerHeight;
+			this.position.y = window.innerHeight;
+			this.drag(this.velocity);
 		}
 
 		// check for x out of bounds
 		if (
-			this.position.x > window.innerWidth &&
+			this.position.x > window.innerWidth + window.innerWidth / 2 &&
 			Math.abs(this.velocity.gradient()) < Math.PI / 2
 		) {
-			this.lastPos.x = -10;
-			this.position.x = -10;
+			this.lastPos.x = 0;
+			this.position.x = 0;
+			this.drag(this.velocity);
 		} else if (
-			this.position.x < 0 &&
+			this.position.x < -window.innerWidth / 2 &&
 			Math.abs(this.velocity.gradient()) > Math.PI / 2
 		) {
-			this.lastPos.x = window.innerWidth + 10;
-			this.position.x = window.innerWidth + 10;
+			this.lastPos.x = window.innerWidth;
+			this.position.x = window.innerWidth;
+			this.drag(this.velocity);
 		}
 
 		this.velocity = this.velocity.add(
-			this.velocity.scale(-0.000001 * this.velocity.magnitude ** 2)
+			this.velocity.scale(-0.0000001 * this.velocity.magnitude ** 2)
 		);
 
-		this.draw(ctx);
+		this.draw(ctx, this.velocity);
 	}
 
 	/**
 	 * Draws, colors, and fills a ball using the parameters given in the constructor
 	 * @param ctx the HTML Canvas's 2D rendering context
 	 */
-	draw(ctx: CanvasRenderingContext2D) {
-		// Colors and fills my balls :3
-
+	draw(ctx: CanvasRenderingContext2D, velocity: Vector) {
 		ctx.beginPath();
 		ctx.moveTo(this.position.x, this.position.y);
 		if (!this.blackHole) {
@@ -127,35 +121,16 @@ class Particle {
 			ctx.fill();
 		}
 	}
-}
 
-const drawVectorField = (ctx: CanvasRenderingContext2D) => {
-	for (let x = 0; x < window.innerWidth; x += window.innerWidth / 10) {
-		for (let y = 0; y < window.innerHeight; y += window.innerHeight / 10) {
-			for (const particle of particles) {
-				const between = new Vector(x, y).subtract(particle.position);
-
-				const acceleration = between.unit
-					.scale(particle.mass)
-					.scale(-100 / Math.max(between.magnitude ** 2, 10));
-
-				ctx.fillStyle = "#330000ff";
-
-				ctx.moveTo(x, y);
-				ctx.beginPath();
-				ctx.lineTo(x + acceleration.x * 10, y + acceleration.y * 10);
-				ctx.stroke();
-
-				console.log(x + acceleration.x * 10, y + acceleration.y * 10);
-			}
-		}
+	drag(velocity: Vector) {
+		this.velocity = velocity.scale(0.5);
 	}
-};
+}
 
 const spawnParticle = (position: Vector, velocity: Vector) => {
 	particles.push(
 		new Particle(
-			0,
+			0.0025,
 			position,
 			velocity,
 			colourutil.getRandomLight(),
@@ -165,7 +140,7 @@ const spawnParticle = (position: Vector, velocity: Vector) => {
 	);
 };
 
-for (let i = 0; i < 50; i++) {
+for (let i = 0; i < 250; i++) {
 	spawnParticle(
 		new Vector(
 			Math.random() * window.innerWidth,
@@ -175,9 +150,27 @@ for (let i = 0; i < 50; i++) {
 	);
 }
 
+// big boi
 particles.push(
 	new Particle(
-		1,
+		0.85,
+		new Vector(
+			window.innerWidth - window.innerWidth / 4,
+			window.innerHeight / 2 - window.innerHeight / 8
+		),
+		new Vector(Math.random() * 0.05 - 5, Math.random() * 0.05 - 5),
+		"fff",
+		false,
+		true
+	)
+);
+
+///
+/// MOUSE REPELLER
+///
+particles.push(
+	new Particle(
+		-0.25,
 		new Vector(window.innerWidth - 512, window.innerHeight / 2 - 128),
 		new Vector(Math.random() * 0.05 - 5, Math.random() * 0.05 - 5),
 		"fff",
@@ -186,24 +179,16 @@ particles.push(
 	)
 );
 
-particles.push(
-	new Particle(
-		-0.5,
-		new Vector(window.innerWidth, window.innerHeight),
-		new Vector(0, 0),
-		"fff",
-		true,
-		false
-	)
-);
-
-let i = 0;
+///
+/// PARTICLE RENDERER
+///
 
 // render the particles
+let i = 0;
 export const render = (ctx: CanvasRenderingContext2D) => {
 	if (i++ % 60) {
 		//ctx.fillStyle = "#00000010";
-		ctx.fillStyle = `rgba(0,0,0,0.05)`;
+		ctx.fillStyle = `rgba(0,0,0,0.1)`;
 		ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 	}
 
@@ -211,8 +196,8 @@ export const render = (ctx: CanvasRenderingContext2D) => {
 	ctx.fillStyle = "#fff";
 	ctx.beginPath();
 	ctx.ellipse(
-		window.innerWidth - 512,
-		window.innerHeight / 2 - 128,
+		window.innerWidth - window.innerWidth / 4,
+		window.innerHeight / 2 - window.innerHeight / 8,
 		5,
 		5,
 		1,
@@ -224,8 +209,5 @@ export const render = (ctx: CanvasRenderingContext2D) => {
 	for (const particle of particles) {
 		particle.update(ctx);
 	}
-
-	// drawVectorField(ctx);
-
 	requestAnimationFrame(() => render(ctx));
 };

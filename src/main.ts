@@ -1,5 +1,4 @@
 import { render } from "./canvas/gravity";
-import { BouncingBall } from "./canvas/line";
 
 export const canvas = <HTMLCanvasElement>document.getElementById("lines");
 
