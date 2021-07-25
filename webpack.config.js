@@ -30,11 +30,11 @@ module.exports = {
 			template: "src/index.html",
 		}),
 		new HtmlWebpackPlugin({
-			filename: "about",
+			filename: "about/index.html",
 			template: "src/about/index.html",
 		}),
 		new HtmlWebpackPlugin({
-			filename: "skye",
+			filename: "skye/index.html",
 			template: "src/skye/index.html",
 		}),
 		new CopyWebpackPlugin(
